@@ -1,0 +1,278 @@
+/**
+ * Staff Profile Card v2.0 — Academic Staff Directory Styles
+ *
+ * Matches the reference design: horizontal card rows with orange accent,
+ * responsive layout for desktop / tablet / mobile.
+ */
+
+/* ------------------------------------------------------------------ */
+/*  CSS Custom Properties                                             */
+/* ------------------------------------------------------------------ */
+:root {
+    --spc-accent: #E8590C;
+    --spc-accent-hover: #C2410C;
+    --spc-text-primary: #1a202c;
+    --spc-text-secondary: #374151;
+    --spc-text-muted: #6B7280;
+    --spc-bg-card: #ffffff;
+    --spc-bg-page: #F9FAFB;
+    --spc-border: #E5E7EB;
+    --spc-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --spc-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    --spc-radius: 8px;
+    --spc-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Directory container                                               */
+/* ------------------------------------------------------------------ */
+.spc-directory {
+    font-family: var(--spc-font);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Card list                                                         */
+/* ------------------------------------------------------------------ */
+.spc-directory__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Card — horizontal row layout                                      */
+/* ------------------------------------------------------------------ */
+.spc-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--spc-bg-card);
+    border: 1px solid var(--spc-border);
+    border-radius: var(--spc-radius);
+    padding: 16px 20px;
+    transition: box-shadow 0.25s ease;
+    box-shadow: var(--spc-shadow);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+
+.spc-card:hover {
+    box-shadow: var(--spc-shadow-hover);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Profile image                                                     */
+/* ------------------------------------------------------------------ */
+.spc-card__image {
+    flex-shrink: 0;
+    width: 80px;
+    height: 90px;
+    overflow: hidden;
+    border-radius: 6px;
+    background-color: #F3F4F6;
+    border: 2px solid var(--spc-border);
+}
+
+.spc-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Card body — text content                                          */
+/* ------------------------------------------------------------------ */
+.spc-card__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.spc-card__name {
+    font-family: var(--spc-font);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--spc-accent);
+    margin: 0 0 4px;
+    line-height: 1.35;
+}
+
+.spc-card__name a {
+    color: var(--spc-accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.spc-card__name a:hover {
+    color: var(--spc-accent-hover);
+    text-decoration: underline;
+}
+
+.spc-card__designation {
+    font-family: var(--spc-font);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--spc-text-secondary);
+    margin: 0 0 4px;
+    line-height: 1.4;
+}
+
+.spc-card__qualifications {
+    font-family: var(--spc-font);
+    font-size: 0.78rem;
+    color: var(--spc-text-muted);
+    margin: 0;
+    line-height: 1.45;
+    font-weight: 400;
+}
+
+/* ------------------------------------------------------------------ */
+/*  View Profile link                                                 */
+/* ------------------------------------------------------------------ */
+.spc-card__actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.spc-card__view-profile {
+    font-family: var(--spc-font);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--spc-accent);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.spc-card__view-profile:hover {
+    color: var(--spc-accent-hover);
+    background-color: #FFF7ED;
+}
+
+.spc-card__view-profile svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+}
+
+.spc-card__view-profile:hover svg {
+    transform: translateX(3px);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Fallback / error state                                            */
+/* ------------------------------------------------------------------ */
+.spc-card--fallback {
+    border-left-color: #F59E0B;
+    background: #FFFBEB;
+}
+
+.spc-card__fallback-message {
+    font-family: var(--spc-font);
+    font-size: 0.88rem;
+    color: #92400E;
+    margin: 0;
+    padding: 4px 0;
+}
+
+/* Directory-level fallback (no profiles configured) */
+.spc-directory__fallback {
+    text-align: center;
+    padding: 32px 16px;
+    border: 2px dashed var(--spc-border);
+    border-radius: var(--spc-radius);
+    background: var(--spc-bg-card);
+}
+
+.spc-directory__fallback-message {
+    font-family: var(--spc-font);
+    font-size: 0.92rem;
+    color: var(--spc-text-muted);
+    margin: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Responsive — Tablet (≤ 768px)                                     */
+/* ------------------------------------------------------------------ */
+@media (max-width: 768px) {
+    .spc-directory {
+        max-width: 100%;
+    }
+
+    .spc-card {
+        gap: 14px;
+        padding: 14px 16px;
+    }
+
+    .spc-card__image {
+        width: 70px;
+        height: 80px;
+    }
+
+    .spc-card__name {
+        font-size: 0.92rem;
+    }
+
+    .spc-card__designation {
+        font-size: 0.82rem;
+    }
+
+    .spc-card__qualifications {
+        font-size: 0.75rem;
+    }
+
+    .spc-card__view-profile {
+        font-size: 0.78rem;
+        padding: 4px 8px;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Responsive — Mobile (≤ 480px)                                     */
+/* ------------------------------------------------------------------ */
+@media (max-width: 480px) {
+    .spc-directory__title {
+        font-size: 1.3rem;
+    }
+
+    .spc-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 16px;
+        gap: 10px;
+    }
+
+    .spc-card__image {
+        width: 72px;
+        height: 82px;
+        border-radius: 8px;
+        margin: 0 auto;
+    }
+
+    .spc-card__body {
+        text-align: center;
+    }
+
+    .spc-card__name {
+        font-size: 0.9rem;
+    }
+
+    .spc-card__actions {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .spc-card__view-profile {
+        font-size: 0.8rem;
+    }
+}
