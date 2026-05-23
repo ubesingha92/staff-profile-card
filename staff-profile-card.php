@@ -22,6 +22,10 @@ define( 'SPC_VERSION', '2.0.0' );
 define( 'SPC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SPC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
+if ( ! defined( 'SPC_ALLOWED_API_HOSTS' ) ) {
+    define( 'SPC_ALLOWED_API_HOSTS', [ 'localhost', '127.0.0.1', '::1' ] );
+}
+
 /* ------------------------------------------------------------------ */
 /*  1. Admin Settings Page                                            */
 /* ------------------------------------------------------------------ */
@@ -39,7 +43,39 @@ function spc_register_settings() {
 add_action( 'admin_init', 'spc_register_settings' );
 
 /**
- * Sanitize the API URL. Allow only valid http/https URLs.
+ * Return trusted API hosts configured by the site.
+ *
+ * @return array
+ */
+function spc_allowed_api_hosts() {
+    $hosts = defined( 'SPC_ALLOWED_API_HOSTS' ) ? SPC_ALLOWED_API_HOSTS : [];
+    if ( is_string( $hosts ) ) {
+        $hosts = array_map( 'trim', explode( ',', $hosts ) );
+    }
+    if ( ! is_array( $hosts ) ) {
+        return [];
+    }
+
+    return array_values( array_filter( array_map( static function ( $host ) {
+        return strtolower( trim( (string) $host, " \t\n\r\0\x0B[]" ) );
+    }, $hosts ) ) );
+}
+
+/**
+ * Check whether an API URL points to a trusted host.
+ *
+ * @param string $url API endpoint URL.
+ * @return bool
+ */
+function spc_api_url_is_allowed( $url ) {
+    $parts = wp_parse_url( $url );
+    $host  = strtolower( trim( (string) ( $parts['host'] ?? '' ), '[]' ) );
+
+    return $host !== '' && in_array( $host, spc_allowed_api_hosts(), true );
+}
+
+/**
+ * Sanitize the API URL. Allow only valid http/https URLs on trusted hosts.
  *
  * @param string $value Raw input.
  * @return string Sanitized URL or empty string.
@@ -52,6 +88,16 @@ function spc_sanitize_api_url( $value ) {
             'spc_api_url',
             'spc_invalid_url',
             __( 'Please enter a valid HTTP or HTTPS URL.', 'staff-profile-card' ),
+            'error'
+        );
+        return '';
+    }
+
+    if ( ! spc_api_url_is_allowed( $value ) ) {
+        add_settings_error(
+            'spc_api_url',
+            'spc_untrusted_url',
+            __( 'This API host is not trusted. Add it to SPC_ALLOWED_API_HOSTS before saving this URL.', 'staff-profile-card' ),
             'error'
         );
         return '';
@@ -102,11 +148,11 @@ function spc_render_settings_page() {
                             name="spc_api_url"
                             value="<?php echo esc_attr( get_option( 'spc_api_url', '' ) ); ?>"
                             class="regular-text"
-                            placeholder="https://example.com/profiles/api/profile"
+                            placeholder="http://localhost/profiles/api/profile"
                         />
                         <p class="description">
                             <?php esc_html_e(
-                                'Enter the base API URL only. Add the API Profile ID in each widget, not in this URL.',
+                                'Enter the base API URL only. Add the API Profile ID in each widget, not in this URL. The host must be listed in SPC_ALLOWED_API_HOSTS.',
                                 'staff-profile-card'
                             ); ?>
                         </p>
@@ -135,6 +181,11 @@ function spc_fetch_profile( $api_profile_id ) {
 
     if ( empty( $api_url ) ) {
         return new WP_Error( 'spc_no_url', __( 'API endpoint URL is not configured.', 'staff-profile-card' ) );
+    }
+
+    if ( ! spc_api_url_is_allowed( $api_url ) ) {
+        error_log( 'Staff Profile Card blocked untrusted API URL: ' . $api_url );
+        return new WP_Error( 'spc_untrusted_url', __( 'The configured API URL is not trusted.', 'staff-profile-card' ) );
     }
 
     if ( ! preg_match( '/\ASPC-[A-Z0-9]{8}\z/', $api_profile_id ) ) {

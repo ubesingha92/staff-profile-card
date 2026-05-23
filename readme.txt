@@ -25,7 +25,7 @@ Support: https://github.com/ubesingha92/staff-profile-card/issues
 1. Install and activate the plugin in WordPress.
 2. Go to Settings > Staff Profile Card.
 3. Add your API endpoint URL, for example:
-   https://example.com/profiles/api/profile
+   http://localhost/profiles/api/profile
 4. Open a page with Elementor.
 5. Add the Staff Profile Card widget.
 6. Add one or more API Profile IDs, for example:
@@ -35,6 +35,9 @@ Support: https://github.com/ubesingha92/staff-profile-card/issues
 Use only the API Profile ID. Do not use a Staff ID or database ID.
 
 == Notes ==
+
+By default, API URLs are allowed only for localhost, 127.0.0.1, and ::1.
+To use another API host, add it to SPC_ALLOWED_API_HOSTS in your WordPress config.
 
 If an API Profile ID is wrong, inactive, or unavailable, that profile is skipped.
 
